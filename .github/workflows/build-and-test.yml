@@ -3,11 +3,10 @@
 
 name: build-and-test
 
-on: pull_request
+on: [pull_request_target]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -15,7 +14,14 @@ jobs:
         node-version: [12.x]
 
     steps:
+    - name: Get PR number
+      uses: actions/github-script@v3
+      id: pr-number
+      with:
+        script: return context.issue.number;
     - uses: actions/checkout@v2
+      with:
+        submodules: true
 
     # https://github.com/actions/cache/blob/master/examples.md#node---yarn
     - name: Get yarn cache directory path
@@ -29,15 +35,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
 
-    # https://github.com/actions/checkout#checkout-submodules
-    - name: Checkout submodules
-      shell: bash
-      run: |
-        git config --global url."https://github.com/".insteadOf "git@github.com:"
-        auth_header="$(git config --local --get http.https://github.com/.extraheader)"
-        git submodule sync --recursive
-        git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
-
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -48,3 +45,11 @@ jobs:
       run: npm test
     - name: Build
       run: ./build.sh
+    - name: Preview Deploy
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: "${{ secrets.GITHUB_TOKEN }}"
+        firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+        expires: 7d
+        projectId: angular-ja
+        channelId: "preview-pr${{steps.pr-number.outputs.result}}"

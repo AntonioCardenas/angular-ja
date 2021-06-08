@@ -63,6 +63,7 @@ CLIを使って生成することができます。
 `AppRoutingModule` はすでに `HeroesComponent` をインポートしているため、 `routes` 配列で使用できます。
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts"
+  region="heroes-route">
 </code-example>
 
 典型的なAngularの`Route`はふたつのプロパティを持っています：
@@ -311,7 +312,7 @@ CLIは、`DashboardComponent`のためのファイルを生成し、`AppModule`�
   header="src/app/dashboard/dashboard.component.html (hero links)">
 </code-example>
 
-`*ngFor`リピーター内でAngularの[補間バインディング](guide/template-syntax#interpolation)を使用していて、
+`*ngFor`リピーター内でAngularの[補間バインディング](guide/interpolation)を使用していて、
 現在の繰り返しの `hero.id`を個々の[`routerLink`](#routerlink)に挿入します。
 
 {@a heroes-component-links}
